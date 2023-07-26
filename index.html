@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Canvas Performance</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+</head>
+<body>
+    <h1>Comparing PyScript Canvas Drawing</h1>
+    <table>
+        <tr>
+            <td>
+                Direct Drawing
+            </td>
+            <td>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            </td>
+            <td>
+                Buffered Drawing
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <canvas id="canvas-direct" width="300" height="300"></canvas>
+            </td>
+            <td>
+            </td>
+            <td>
+                 <canvas id="canvas-buffered" width="300" height="300"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="info-direct"></div>
+            </td>
+            <td>
+            </td>
+            <td>
+                <div id="info-buffered"></div>
+            </td>
+        </tr>
+    </table>
+    <button py-click="compare()">Run</button>
+    <py-config src="./pyscript.toml"></py-config>
+    <py-script src="./main.py"></py-script>
+    <script>
+        function drawBufferedOperations(id, operations) { try {
+            var index = 0
+            const op = JSON.parse(operations)
+            const context = document.getElementById(id).getContext("2d");
+            const handlers = [
+                (index) => {
+                    context.fillRect(op[index+1], op[index+2], op[index+3], op[index+4])
+                    return 5
+                },
+                (index) => {
+                    context.fillText(op[index+1], op[index+2], op[index+3], op[index+4], op[index+5])
+                    return 6
+                },
+                (index) => {
+                    context.font = op[index+1]
+                    return 2
+                },
+                (index) => {
+                    context.fillStyle = op[index+1]
+                    return 2
+                },
+            ];
+            const length = op.length
+            while (index < length) {
+                index += handlers[op[index]](index)
+            }
+        } catch(e) { console.log(e); }        
+    }
+    </script>
+</body>
+</html>
